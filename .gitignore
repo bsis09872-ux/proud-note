@@ -1,0 +1,25 @@
+# Python
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# 가상환경
+.venv
+
+# 환경변수 (비밀 정보!) - 예시 파일만 커밋
+.env
+.env.*
+!.env.example
+
+# 도구 캐시
+.ruff_cache/
+.pytest_cache/
+
+# 업로드 파일
+media/
+
+# 개인 학습 가이드
+guide/
