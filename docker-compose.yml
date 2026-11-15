@@ -1,0 +1,22 @@
+services:
+  db:
+    image: postgres:17
+    container_name: proud-note-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: proud
+      POSTGRES_PASSWORD: proud
+      POSTGRES_DB: proud_note
+      TZ: UTC
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U proud -d proud_note"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+volumes:
+  pgdata:
