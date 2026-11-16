@@ -1,15 +1,23 @@
 from contextlib import asynccontextmanager
+from pathlib import Path
 
 from fastapi import FastAPI, status
 from fastapi.responses import JSONResponse
+from fastapi.staticfiles import StaticFiles
 from sqlalchemy import text
 
+from auth.presentation.routers.v1.router import router as auth_router
+from emoji.presentation.routers.v1.router import router as emoji_router
+from note.presentation.routers.v1.router import router as note_router
 from shared.core.config import settings
 from shared.core.database import close_db, engine
 from shared.core.exception_handlers import register_exception_handlers
 from shared.core.logger import get_logger, setup_logging
 from shared.core.middlewares import register_middlewares
 from shared.core.schemas import APIResponse
+from space.presentation.routers.v1.router import router as space_router
+from user.presentation.routers.v1.router import router as user_router
+from wiring import wire_dependencies
 
 setup_logging()
 logger = get_logger("app")
@@ -32,6 +40,14 @@ app = FastAPI(
 
 register_middlewares(app)
 register_exception_handlers(app)
+wire_dependencies(app)
+
+for router in (user_router, auth_router, space_router, note_router, emoji_router):
+    app.include_router(router)
+
+# 커스텀 이모지 이미지 서빙 (/media/emojis/xxx.png)
+Path(settings.media_dir).mkdir(parents=True, exist_ok=True)
+app.mount("/media", StaticFiles(directory=settings.media_dir), name="media")
 
 
 @app.get("/health", tags=["System"], summary="헬스체크 (DB 연결 포함)")
