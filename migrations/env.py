@@ -4,7 +4,7 @@ from logging.config import fileConfig
 from alembic import context
 from sqlalchemy import pool
 from sqlalchemy.engine import Connection
-from sqlalchemy.ext.asyncio import async_engine_from_config
+from sqlalchemy.ext.asyncio import create_async_engine
 
 # 모든 모델을 import 해야 autogenerate 가 테이블을 인식한다
 import auth.infrastructure.models  # noqa: F401
@@ -13,10 +13,12 @@ import note.infrastructure.models  # noqa: F401
 import space.infrastructure.models  # noqa: F401
 import user.infrastructure.models  # noqa: F401
 from shared.core.config import settings
+from shared.core.database import connect_args
 from shared.core.models import Base
 
 config = context.config
-config.set_main_option("sqlalchemy.url", settings.database_url)
+# % 는 configparser 에서 특수문자라 이스케이프 (비밀번호에 % 가 있을 수 있음)
+config.set_main_option("sqlalchemy.url", settings.database_url.replace("%", "%%"))
 
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
@@ -45,10 +47,8 @@ def do_run_migrations(connection: Connection) -> None:
 
 
 async def run_async_migrations() -> None:
-    connectable = async_engine_from_config(
-        config.get_section(config.config_ini_section, {}),
-        prefix="sqlalchemy.",
-        poolclass=pool.NullPool,
+    connectable = create_async_engine(
+        settings.database_url, poolclass=pool.NullPool, connect_args=connect_args()
     )
     async with connectable.connect() as connection:
         await connection.run_sync(do_run_migrations)

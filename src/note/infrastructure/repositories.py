@@ -33,7 +33,9 @@ class SqlAlchemyNoteRepository(NoteRepository):
         )
         if tag:
             # @> 연산자 -> GIN 인덱스 사용
-            stmt = stmt.where(NoteModel.tags.contains([tag.strip().lstrip("#").lower()]))
+            stmt = stmt.where(
+                NoteModel.tags.contains([tag.strip().lstrip("#").lower()])
+            )
         if keyword:
             pattern = f"%{_escape_like(keyword.strip())}%"
             stmt = stmt.where(

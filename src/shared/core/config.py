@@ -26,6 +26,10 @@ class Settings(BaseSettings):
     db_pool_size: int = 10
     db_max_overflow: int = 20
     sql_echo: bool = False
+    # Supabase 등 외부 DB: SSL 필수
+    db_ssl: bool = False
+    # Supabase Transaction pooler(6543 포트) 사용 시 True -> prepared statement 캐시 끄기
+    db_use_pooler: bool = False
 
     # JWT (HS512는 64바이트 이상 키 권장 -> 짧으면 기동 실패)
     jwt_secret_key: str = Field(min_length=64)
