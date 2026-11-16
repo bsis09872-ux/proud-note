@@ -1,6 +1,6 @@
 """통합 테스트: 진짜 PostgreSQL(테스트 전용 DB)에 Alembic 마이그레이션을 적용하고 API 를 호출한다.
 
-TEST_DATABASE_URL 기본값: postgresql+asyncpg://proud:proud@localhost:5432/proud_note_test
+TEST_DATABASE_URL 기본값: postgresql+asyncpg://proud:proud@localhost:5433/proud_note_test
 (docker compose up -d 로 띄운 DB 에 proud_note_test DB 를 자동 생성)
 """
 
@@ -13,7 +13,7 @@ import pytest
 
 TEST_DB_URL = os.environ.get(
     "TEST_DATABASE_URL",
-    "postgresql+asyncpg://proud:proud@localhost:5432/proud_note_test",
+    "postgresql+asyncpg://proud:proud@localhost:5433/proud_note_test",
 )
 # 앱 import 전에 설정을 바꿔야 한다 (settings 는 import 시점에 읽힘)
 os.environ["DATABASE_URL"] = TEST_DB_URL
