@@ -32,7 +32,8 @@ class SqlAlchemyNoteRepository(NoteRepository):
             NoteModel.space_id == space_id, NoteModel.deleted_at.is_(None)
         )
         if tag:
-            stmt = stmt.where(NoteModel.tags.any(tag.strip().lstrip("#").lower()))
+            # @> 연산자 -> GIN 인덱스 사용
+            stmt = stmt.where(NoteModel.tags.contains([tag.strip().lstrip("#").lower()]))
         if keyword:
             pattern = f"%{_escape_like(keyword.strip())}%"
             stmt = stmt.where(
